@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - Add Charging Station</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #000;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Admin Panel - Add Charging Station</h1>
+
+  <form id="adminForm">
+    <label for="stationName">Station Name:</label>
+    <input type="text" id="stationName" required>
+
+    <label for="ownerName">Owner Name:</label>
+    <input type="text" id="ownerName" required>
+
+    <label for="contactNumber">Contact Number:</label>
+    <input type="text" id="contactNumber" required>
+
+    <label for="totalSlots">Total Slots:</label>
+    <input type="number" id="totalSlots" min="1" required>
+
+    <label for="mapsURL">Google Maps URL:</label>
+    <input type="text" id="mapsURL" placeholder="Paste Google Maps URL here" required>
+
+    <label for="chargingType">Charging Type:</label>
+    <select id="chargingType" required>
+      <option value="AC">AC</option>
+      <option value="DC">DC</option>
+      <option value="Both">Both</option>
+    </select>
+
+    <button type="submit">Submit Station Info</button>
+  </form>
+
+  <h2>Current Stations</h2>
+  <table id="stationsTable">
+    <thead>
+      <tr>
+        <th>Station Name</th>
+        <th>Owner</th>
+        <th>Contact</th>
+        <th>Total Slots</th>
+        <th>Charging Type</th>
+        <th>Location</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="stationsList">
+      <!-- Stations will appear here -->
+    </tbody>
+  </table>
+
+  <script>
+    const stations = JSON.parse(localStorage.getItem('stations')) || [];
+
+    function renderStations() {
+      const table = document.getElementById('stationsList');
+      table.innerHTML = '';
+
+      stations.forEach((station, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${station.name}</td>
+          <td>${station.owner}</td>
+          <td>${station.contact}</td>
+          <td>${station.totalSlots}</td>
+          <td>${station.chargingType}</td>
+          <td><a href="${station.mapsURL}" target="_blank">Navigate</a></td>
+          <td>
+            <button onclick="deleteStation(${index})">Delete</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    document.getElementById('adminForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const stationName = document.getElementById('stationName').value.trim();
+      const ownerName = document.getElementById('ownerName').value.trim();
+      const contactNumber = document.getElementById('contactNumber').value.trim();
+      const totalSlots = parseInt(document.getElementById('totalSlots').value);
+      const mapsURL = document.getElementById('mapsURL').value.trim();
+      const chargingType = document.getElementById('chargingType').value;
+
+      const stationData = {
+        name: stationName,
+        owner: ownerName,
+        contact: contactNumber,
+        totalSlots,
+        chargingType,
+        mapsURL
+      };
+
+      stations.push(stationData);
+      localStorage.setItem('stations', JSON.stringify(stations));
+      renderStations();
+
+      document.getElementById('adminForm').reset();
+    });
+
+    function deleteStation(index) {
+      stations.splice(index, 1);
+      localStorage.setItem('stations', JSON.stringify(stations));
+      renderStations();
+    }
+
+    renderStations();
+  </script>
+
+</body>
+</html>

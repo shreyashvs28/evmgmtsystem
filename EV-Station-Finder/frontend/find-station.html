@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Find Charging Stations</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+
+    button {
+      padding: 8px 15px;
+      background-color: #000;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Available Charging Stations</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Station Name</th>
+        <th>Owner</th>
+        <th>Contact</th>
+        <th>Total Slots</th>
+        <th>Charging Type</th>
+        <th>Location</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="stationsList">
+      <!-- Stations will appear here -->
+    </tbody>
+  </table>
+
+  <script>
+    const stations = JSON.parse(localStorage.getItem('stations')) || [];
+
+    function renderStations() {
+      const table = document.getElementById('stationsList');
+      table.innerHTML = '';
+
+      stations.forEach(station => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${station.name}</td>
+          <td>${station.owner}</td>
+          <td>${station.contact}</td>
+          <td>${station.totalSlots}</td>
+          <td>${station.chargingType}</td>
+          <td><a href="${station.mapsURL}" target="_blank">Navigate</a></td>
+          <td><button onclick="bookSlot('${station.name}')">Book Slot</button></td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function bookSlot(stationName) {
+      alert(`Booking slot for ${stationName}...`);
+      // You can add logic here to handle slot booking.
+    }
+
+    renderStations();
+  </script>
+
+</body>
+</html>
