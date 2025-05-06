@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - Add Charging Station</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Charging Stations</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
       padding: 20px;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
     }
-
     form {
       background: #fff;
       padding: 25px;
@@ -24,13 +22,11 @@
       margin: 0 auto;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
     }
-
     input, select {
       width: 100%;
       padding: 10px;
@@ -38,7 +34,6 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
-
     button {
       margin-top: 20px;
       width: 100%;
@@ -50,26 +45,21 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #333;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
-
     table, th, td {
       border: 1px solid #ddd;
     }
-
     th, td {
       padding: 10px;
       text-align: center;
     }
-
     th {
       background-color: #f4f4f4;
     }
@@ -77,7 +67,7 @@
 </head>
 <body>
 
-  <h1>Admin Panel - Add Charging Station</h1>
+  <h1>Admin Panel - Manage Charging Stations</h1>
 
   <form id="adminForm">
     <label for="stationName">Station Name:</label>
@@ -106,7 +96,7 @@
   </form>
 
   <h2>Current Stations</h2>
-  <table id="stationsTable">
+  <table>
     <thead>
       <tr>
         <th>Station Name</th>
@@ -124,6 +114,11 @@
   </table>
 
   <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+    alert("Access Denied! Please log in first.");
+    window.location.href = "login.html";
+  }
+
     const stations = JSON.parse(localStorage.getItem('stations')) || [];
 
     function renderStations() {
@@ -140,6 +135,7 @@
           <td>${station.chargingType}</td>
           <td><a href="${station.mapsURL}" target="_blank">Navigate</a></td>
           <td>
+            <button onclick="viewStation(${index})">View</button>
             <button onclick="deleteStation(${index})">Delete</button>
           </td>
         `;
@@ -150,20 +146,13 @@
     document.getElementById('adminForm').addEventListener('submit', function(event) {
       event.preventDefault();
 
-      const stationName = document.getElementById('stationName').value.trim();
-      const ownerName = document.getElementById('ownerName').value.trim();
-      const contactNumber = document.getElementById('contactNumber').value.trim();
-      const totalSlots = parseInt(document.getElementById('totalSlots').value);
-      const mapsURL = document.getElementById('mapsURL').value.trim();
-      const chargingType = document.getElementById('chargingType').value;
-
       const stationData = {
-        name: stationName,
-        owner: ownerName,
-        contact: contactNumber,
-        totalSlots,
-        chargingType,
-        mapsURL
+        name: document.getElementById('stationName').value.trim(),
+        owner: document.getElementById('ownerName').value.trim(),
+        contact: document.getElementById('contactNumber').value.trim(),
+        totalSlots: parseInt(document.getElementById('totalSlots').value),
+        mapsURL: document.getElementById('mapsURL').value.trim(),
+        chargingType: document.getElementById('chargingType').value,
       };
 
       stations.push(stationData);
@@ -177,6 +166,11 @@
       stations.splice(index, 1);
       localStorage.setItem('stations', JSON.stringify(stations));
       renderStations();
+    }
+
+    function viewStation(index) {
+      localStorage.setItem('selectedStation', JSON.stringify(stations[index]));
+      window.location.href = 'view.html';
     }
 
     renderStations();
