@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel - Charging Stations</title>
   <style>
     body {
@@ -114,8 +114,6 @@
   </table>
 
   <script>
-    
-
     const stations = JSON.parse(localStorage.getItem('stations')) || [];
 
     function renderStations() {
@@ -167,7 +165,7 @@
 
     function viewStation(index) {
       localStorage.setItem('selectedStation', JSON.stringify(stations[index]));
-      window.location.href = 'view.html';
+      window.location.href = 'view.html'; // Ensure view.html exists
     }
 
     renderStations();
