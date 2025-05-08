@@ -1,60 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booked Slot - Vehicle Details</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Booking History</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
       padding: 20px;
+      background-color: #f4f4f4;
     }
     h1 {
       text-align: center;
+      margin-bottom: 30px;
     }
-    .details {
-      background: #fff;
+    .station-section {
+      margin-bottom: 40px;
+      background: white;
       padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: 0 auto;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    p {
-      font-size: 18px;
-      margin: 10px 0;
+    h2 {
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 10px;
     }
-    iframe {
+    table {
       width: 100%;
-      height: 300px;
-      border: none;
+      border-collapse: collapse;
       margin-top: 15px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #eee;
     }
   </style>
 </head>
 <body>
 
-  <h1>Booked Slot - Vehicle Details</h1>
-
-  <div class="details">
-    <p><strong>Owner Name:</strong> <span id="owner"></span></p>
-    <p><strong>Car Model:</strong> <span id="carModel"></span></p>
-    <p><strong>Registration Number:</strong> <span id="registration"></span></p>
-    <p><strong>Booked Slot Time:</strong> <span id="bookedTime"></span></p>
-  </div>
+  <h1>Booking History by Charging Station</h1>
+  <div id="history-container"></div>
 
   <script>
-    const bookingDetails = JSON.parse(localStorage.getItem('bookedVehicle'));
+    const bookings = JSON.parse(localStorage.getItem("userHistory")) || [];
 
-    if (bookingDetails) {
-      document.getElementById('owner').textContent = bookingDetails.owner;
-      document.getElementById('carModel').textContent = bookingDetails.carModel;
-      document.getElementById('registration').textContent = bookingDetails.registration;
-      document.getElementById('bookedTime').textContent = bookingDetails.bookedTime;
-      document.getElementById('locationFrame').src = `https://www.google.com/maps?q=${bookingDetails.latitude},${bookingDetails.longitude}`;
+    // Group bookings by station
+    const grouped = {};
+    bookings.forEach(booking => {
+      if (!grouped[booking.stationName]) {
+        grouped[booking.stationName] = [];
+      }
+      grouped[booking.stationName].push(booking);
+    });
+
+    const container = document.getElementById("history-container");
+
+    if (bookings.length === 0) {
+      container.innerHTML = "<p>No bookings found.</p>";
     } else {
-      document.body.innerHTML = "<h1>No bookings found</h1>";
+      for (const station in grouped) {
+        const section = document.createElement("div");
+        section.className = "station-section";
+        section.innerHTML = `
+          <h2>${station}</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Owner</th>
+                <th>Car Model</th>
+                <th>Slot</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${grouped[station].map(b => `
+                <tr>
+                  <td>${b.owner}</td>
+                  <td>${b.carModel}</td>
+                  <td>${b.slot}</td>
+                  <td>${b.isPaid ? "Paid" : "Not Paid"}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+        container.appendChild(section);
+      }
     }
   </script>
 

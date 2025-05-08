@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Make Payment</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Complete Your Payment</h1>
+  <button onclick="startPayment()">Pay ₹1</button>
+
+  <script>
+    function startPayment() {
+      const bookings = JSON.parse(localStorage.getItem('userHistory')) || [];
+      const paymentIndex = parseInt(localStorage.getItem('paymentIndex'));
+
+      if (isNaN(paymentIndex) || !bookings[paymentIndex]) {
+        alert("Invalid booking selected for payment.");
+        return;
+      }
+
+      const booking = bookings[paymentIndex];
+
+      const options = {
+        key: "QJHikMQGe5KCYr", // ✅ Replace with your LIVE Merchant ID in production
+        amount: 100, // ₹1 in paise
+        currency: "INR",
+        name: "EV Charging Station",
+        description: "Slot Booking Fee",
+        image: "", // Optional logo
+        handler: function (response) {
+          alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+
+          // ✅ Mark as paid
+          bookings[paymentIndex].isPaid = true;
+          localStorage.setItem('userHistory', JSON.stringify(bookings));
+
+          // ✅ Redirect to home (index.html)
+          window.location.href = "index.html";
+        },
+        prefill: {
+          name: booking.owner,
+          email: "test@example.com",
+          contact: "9999999999"
+        },
+        notes: {
+          carModel: booking.carModel,
+          station: booking.stationName
+        },
+        theme: {
+          color: "#000"
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+  </script>
+
+</body>
+</html>

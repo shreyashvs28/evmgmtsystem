@@ -91,7 +91,7 @@
       const owner = prompt("Enter your name:");
       const carModel = prompt("Enter your car model:");
       const registration = prompt("Enter your vehicle registration number:");
-      const bookedTime = prompt("Enter the time slot for booking:");
+      const bookedTime = prompt("Enter the time slot for booking:(e.g., 10:00 AM - 11:00 AM):");
 
       if (owner && carModel && registration && bookedTime) {
         const bookingDetails = {
@@ -99,14 +99,15 @@
           owner,
           carModel,
           registration,
-          bookedTime,
-          latitude: station.latitude,
-          longitude: station.longitude
+          bookedTime
         };
 
-        localStorage.setItem('bookedVehicle', JSON.stringify(bookingDetails));
+        let userHistory = JSON.parse(localStorage.getItem('userHistory')) || [];
+        userHistory.push(bookingDetails);
+        localStorage.setItem('userHistory', JSON.stringify(userHistory));
+
         alert(`Slot booked at ${station.name} for ${bookedTime}`);
-        window.location.href = 'view.html';
+        window.location.href = 'user-dashboard.html'; 
       }
     }
 
