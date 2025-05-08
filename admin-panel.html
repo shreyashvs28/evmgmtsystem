@@ -114,10 +114,7 @@
   </table>
 
   <script>
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-    alert("Access Denied! Please log in first.");
-    window.location.href = "login.html";
-  }
+    
 
     const stations = JSON.parse(localStorage.getItem('stations')) || [];
 
